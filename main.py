@@ -1,15 +1,17 @@
 import sqlite3
 import sys
 
-from PyQt5 import uic
-from PyQt5.QtWidgets import QMainWindow, QApplication, QTableWidgetItem, QDialog
+from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem, QDialog, QApplication
+
+from main_ui import Ui_MainWindow
+from addEditCoffeeForm import Ui_Dialog
 
 
-class DBSample(QMainWindow):
+class DBSample(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
-        uic.loadUi('main.ui', self)
-        self.connection = sqlite3.connect("coffee.sqlite")
+        self.setupUi(self)
+        self.connection = sqlite3.connect("data/coffee.sqlite")
         self.pushButton.clicked.connect(self.add_elem)
         self.pushButton_2.clicked.connect(self.edit_elem)
         self.update_data()
@@ -53,11 +55,11 @@ class DBSample(QMainWindow):
             self.dialog.exec_()
 
 
-class Dialog_add(QDialog):
+class Dialog_add(QDialog, Ui_Dialog):
     def __init__(self, parent):
         super().__init__()
+        self.setupUi(self)
         self.parent = parent
-        uic.loadUi("addEditCoffeeForm.ui", self)
         self.setWindowTitle('Добавить элемент')
         self.comboBox.addItems(list(map(lambda x: x[0], self.parent.connection.cursor().execute("""SELECT
          Степень_обжарки FROM roasting"""))))
@@ -87,13 +89,13 @@ class Dialog_add(QDialog):
             self.label_5.setHidden(False)
 
 
-class Dialog_edit(QDialog):
+class Dialog_edit(QDialog, Ui_Dialog):
     def __init__(self, parent, id):
         super().__init__()
+        self.setupUi(self)
         self.parent = parent
         self.id = id
         self.parent.statusBar.showMessage('')
-        uic.loadUi("addEditCoffeeForm.ui", self)
         self.setWindowTitle('Редактировать элемент')
         r = list(map(lambda x: x[0], self.parent.connection.cursor().execute("""SELECT
          Степень_обжарки FROM roasting""")))
